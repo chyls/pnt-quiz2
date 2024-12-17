@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-color
+  namespace: quiz-pnt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp-color
+  template:
+    metadata:
+      labels:
+        app: webapp-color
+    spec:
+      containers:
+        - name: webapp-color
+          image: kodekloud/webapp-color:v3
+          env:
+            - name: POSTGRES_HOST
+              value: "postgres-service"  # Name of the ClusterIP service
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          ports:
+            - containerPort: 8080  # Ensure this matches what your app is using
